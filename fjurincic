@@ -1,0 +1,35 @@
+//@version=3
+
+strategy(title="Commodity Channel Index", shorttitle="CCI")
+length = input(14, minval=1)
+src = input(close, title="Source")
+ma = sma(src, length)
+cci = (src - ma) / (0.015 * dev(src, length))
+plot(cci, color=olive)
+band1 = hline(100, color=gray, linestyle=dashed)
+band0 = hline(-100, color=gray, linestyle=dashed)
+fill(band1, band0, color=olive)
+
+oversold = -210
+overbought = 210
+
+
+overSold = input( 29 )
+overBought = input( 67 )
+lon = ( 50 )
+shor = ( 50 )
+price = close
+
+vrsi = rsi(price, length)
+
+if (not na(vrsi))
+    if (crossover(vrsi, overSold))
+        strategy.entry("RsiLE", strategy.long, comment="RsiLE")
+    strategy.close("RsiLE", crossunder(cci, overbought))
+    strategy.exit("RsiLE", loss = 2000)
+    if (crossunder(vrsi, overBought))
+        strategy.entry("RsiSE", strategy.short, comment="RsiSE")
+    strategy.close("RsiSE", crossover(cci, oversold))
+    strategy.exit("RsiSE", loss = 2000)
+   
+//plot(strategy.equity, title="equity", color=red, linewidth=2, style=areabr)
